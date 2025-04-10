@@ -1,4 +1,4 @@
-# Nova Act Examples
+# Streamlit Nova Act Examples
 
 This repository contains example applications demonstrating the power of Amazon Nova Act, a Python SDK for building reliable web automation agents.
 
@@ -45,9 +45,9 @@ The `video_game_research_st.py` example demonstrates how to use Nova Act to auto
 
 Visit https://nova.amazon.com/act to generate an API key
 
-1. Install dependencies:
+1. Install dependencies from main folder:
 ```bash
-pip install nova-act streamlit pandas
+pip install -r requirements.txt
 ```
 
 2. Run the application:

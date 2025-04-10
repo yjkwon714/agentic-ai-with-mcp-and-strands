@@ -39,8 +39,8 @@ The project follows MCP's client-server architecture:
 - A valid Nova Act API key (obtain from https://nova.amazon.com/act)
 - Node.js (for Claude Desktop integration)
 - Amazon Bedrock access:
-  - Amazon Bedrock enabled in your AWS account
-  - Claude 3.5 Sonnet V2 model enabled and set as default
+  - [Amazon Bedrock enabled in your AWS account](https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html)
+  - Claude 3.5 Sonnet V2 model enabled (this is default for this example)
   - AWS credentials and region properly configured - [AWS CLI Quickstart Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
 
 ## Project Structure

@@ -1,4 +1,4 @@
-# MCP Nova Act Server
+# MCP Nova Act Examples
 
 An MCP (Model Context Protocol) server implementation for Amazon Nova Act, allowing LLMs to control web browsers through a standardized MCP interface.
 
@@ -16,8 +16,8 @@ An MCP (Model Context Protocol) server implementation for Amazon Nova Act, allow
 2. Python 3.10 or above
 3. A valid Nova Act API key (obtain from https://nova.amazon.com/act)
 4. Amazon Bedrock access:
-   - Amazon Bedrock enabled in your AWS account
-   - Claude 3.5 Sonnet V2 model enabled and set as default
+   - [Amazon Bedrock enabled in your AWS account](https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html)
+   - Claude 3.5 Sonnet V2 model enabled (this is the default for this example)
    - AWS credentials and region properly configured
 
 ## Installation
@@ -51,34 +51,6 @@ This command will:
 
 For setting up and using this server with Claude Desktop, please follow the official [Claude Desktop MCP Setup Guide](https://modelcontextprotocol.io/quickstart/user).
 
-## Writing Effective Nova Act Instructions
-
-When writing actions for Nova Act:
-
-1. Be prescriptive and succinct
-   ✅ "Click the hamburger menu icon, go to Order History"
-   ❌ "Find my order history"
-
-2. Break complex tasks into smaller actions
-   ✅ "Search for hotels in Houston", then "Sort by avg customer review"
-   ❌ "Find the highest rated hotel in Houston"
-
-3. Be specific about UI elements
-   ✅ "Scroll down until you see 'add to cart' and then click it"
-   ❌ "Add the item to cart"
-
-4. For data extraction, use dedicated actions with schemas
-   ✅ "Return the product name, price, and rating"
-   ❌ "Tell me about this product"
-
-## Best Practices
-
-1. Always close browser sessions when done to free up resources
-2. Use headless mode for automated tasks that don't require visual feedback
-3. Break down complex actions into smaller, more specific instructions
-4. Use schemas when expecting structured data responses
-5. Save important results to files for persistence
-6. Handle errors appropriately in your client code
 
 ## Troubleshooting
 
