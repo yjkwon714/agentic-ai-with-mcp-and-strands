@@ -58,3 +58,4 @@ For setting up and using this server with Claude Desktop, please follow the offi
 - For parallel execution issues, try reducing the number of concurrent tasks
 - Browser performance problems may indicate insufficient system resources
 - If actions are not working as expected, try making them more specific and explicit
+- Might need to install chrome with this command: `playwright install chrome`

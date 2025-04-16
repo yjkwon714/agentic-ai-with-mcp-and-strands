@@ -59,6 +59,17 @@ The repository contains two main example directories:
 - `nova_act_mcp_client.py`: Example MCP client implementation
 - Demonstrates integration with Claude Desktop and other MCP hosts
 
+### 3. Nova Act Examples (`nova_act_examples/`)
+- `get_coffee_maker.py`: Simple example demonstrating how to:
+  - Initialize Nova Act with a starting web page
+  - Perform basic web search and selection actions
+  - Extract information from product pages
+- `multi_monitor.py`: Advanced example showing:
+  - Parallel execution of web tasks using ThreadPoolExecutor
+  - Searching and comparing multiple products simultaneously
+  - Structured data extraction and comparison
+  - Error handling for robust web automation
+
 ## Getting Started
 
 1. Clone this repository
