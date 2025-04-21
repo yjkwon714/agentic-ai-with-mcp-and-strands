@@ -1,12 +1,12 @@
 import asyncio
-import os
-from typing import Optional
-from contextlib import AsyncExitStack
 import json
+import os
+from contextlib import AsyncExitStack
+from typing import Optional
 
+import boto3
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-import boto3
 
 NOVA_ACT_API_KEY = os.getenv("NOVA_ACT_API_KEY")
 
@@ -14,6 +14,7 @@ bedrock_runtime = boto3.client(
     service_name="bedrock-runtime",
     region_name="us-west-2",
 )
+
 
 class NovaActMCPClient:
     def __init__(self):
@@ -28,8 +29,8 @@ class NovaActMCPClient:
         if not (is_python or is_js):
             raise ValueError("Server script must be a .py or .js file")
 
-        command = "python" if is_python else "node"
-        
+        command = "python3" if is_python else "node"
+
         # Set environment variables including the API key
         env = os.environ.copy()
         if NOVA_ACT_API_KEY:
@@ -37,7 +38,7 @@ class NovaActMCPClient:
         else:
             print("Warning: NOVA_ACT_API_KEY environment variable not set")
             raise ValueError("NOVA_ACT_API_KEY environment variable not set")
-        
+
         server_params = StdioServerParameters(
             command=command, args=[server_script_path], env=env
         )
@@ -112,35 +113,37 @@ class NovaActMCPClient:
                 if "text" in content_block:
                     # Add text responses to our final output
                     final_responses.append(content_block["text"])
-                
+
                 elif "toolUse" in content_block:
                     # Handle tool usage
                     tool_use = content_block["toolUse"]
                     tool_name = tool_use["name"]
                     tool_input = tool_use["input"]
                     tool_use_id = tool_use["toolUseId"]
-                    
+
                     print(f"Calling tool: {tool_name} with input: {tool_input}")
                     final_responses.append(f"[Calling tool {tool_name}]")
-                    
+
                     # Call the tool through MCP session
                     tool_result = await self.session.call_tool(tool_name, tool_input)
-                    
+
                     # Extract the content from the tool result and convert to JSON if needed
                     try:
                         # Check what we actually got back
                         # print(f"Raw tool result type: {type(tool_result)}")
                         # print(f"Raw tool result: {tool_result}")
-                        
+
                         # Convert the content to a proper JSON object if it's a string
-                        if hasattr(tool_result, 'content'):
+                        if hasattr(tool_result, "content"):
                             content_val = tool_result.content
                             print(f"Content type: {type(content_val)}")
-                            
+
                             # Handle different types of content
                             if isinstance(content_val, list):
                                 # Handle list of TextContent objects
-                                if len(content_val) > 0 and hasattr(content_val[0], 'text'):
+                                if len(content_val) > 0 and hasattr(
+                                    content_val[0], "text"
+                                ):
                                     # Extract text from the first TextContent object
                                     text_content = content_val[0].text
                                     try:
@@ -168,54 +171,61 @@ class NovaActMCPClient:
                     except Exception as e:
                         print(f"Error processing tool result: {e}")
                         result_content = {"error": str(e)}
-                    
+
                     # print(f"Result content type: {type(result_content)}")
                     # print(f"Result content: {result_content}")
-                    
+
                     # Ensure we have a properly structured result for Bedrock
                     # Bedrock expects a simple JSON object, not a nested structure
-                    if isinstance(result_content, dict) and "starting_page" in result_content:
+                    if (
+                        isinstance(result_content, dict)
+                        and "starting_page" in result_content
+                    ):
                         # For browser_session results, extract the most useful info
-                        
+
                         # Check if we have a response in the final result
                         final_result = result_content.get("final_result", {})
                         response_text = final_result.get("response")
                         final_page = final_result.get("final_page")
-                        
+
                         if result_content.get("collected_data"):
-                            result_for_bedrock = {"result": result_content.get("collected_data")}
+                            result_for_bedrock = {
+                                "result": result_content.get("collected_data")
+                            }
                         elif response_text:
                             # If we have a text response from the tool, use it
                             result_for_bedrock = {
                                 "result": response_text,
                                 "url": final_page,
-                                "action": final_result.get("action", "")
+                                "action": final_result.get("action", ""),
                             }
                         elif final_page:
                             result_for_bedrock = {
                                 "result": f"Successfully loaded page: {final_page}",
-                                "url": final_page
+                                "url": final_page,
                             }
                         else:
                             result_for_bedrock = {
                                 "result": f"Opened {result_content.get('starting_page', 'page')}",
                             }
-                            
+
                         # Include all results for context if available
                         if result_content.get("all_results"):
                             all_results = []
                             for res in result_content.get("all_results", []):
                                 if res.get("response"):
-                                    all_results.append({
-                                        "action": res.get("action", ""),
-                                        "response": res.get("response", "")
-                                    })
+                                    all_results.append(
+                                        {
+                                            "action": res.get("action", ""),
+                                            "response": res.get("response", ""),
+                                        }
+                                    )
                             if all_results:
                                 result_for_bedrock["all_results"] = all_results
                     else:
                         # For other results, use as is
                         result_for_bedrock = {"result": result_content}
-                    
+
                     # Create follow-up message with tool result
                     tool_result_message = {
                         "role": "user",
@@ -223,18 +233,16 @@ class NovaActMCPClient:
                             {
                                 "toolResult": {
                                     "toolUseId": tool_use_id,
-                                    "content": [
-                                        {"json": result_for_bedrock}
-                                    ],
+                                    "content": [{"json": result_for_bedrock}],
                                 }
                             }
                         ],
                     }
-                    
+
                     # Add the AI message and tool result to messages
                     messages.append(response_message)
                     messages.append(tool_result_message)
-                    
+
                     # Make another call to get the final response
                     follow_up_response = bedrock_runtime.converse(
                         modelId=model_id,
@@ -243,7 +251,7 @@ class NovaActMCPClient:
                         toolConfig={"tools": tool_list},
                         system=[{"text": system_prompt}],
                     )
-                    
+
                     # Add the follow-up response to our final output
                     follow_up_text = follow_up_response["output"]["message"]["content"][
                         0
@@ -251,7 +259,7 @@ class NovaActMCPClient:
                     final_responses.append(follow_up_text)
 
             return "\n".join(final_responses)
-            
+
         except Exception as e:
             print(f"Error in Bedrock API call: {e}")
             return f"Error: {str(e)}"
@@ -296,4 +304,3 @@ if __name__ == "__main__":
     import sys
 
     asyncio.run(main())
-

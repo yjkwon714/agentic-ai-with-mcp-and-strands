@@ -1,5 +1,5 @@
-import time
 import os
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -7,6 +7,7 @@ from nova_act import NovaAct
 
 # make logs directory
 os.makedirs("./logs", exist_ok=True)
+
 
 def check_monitor_on_amazon(monitor_model, headless=True):
     """Search for a specific monitor model on Amazon and extract information"""
@@ -34,15 +35,15 @@ def check_monitor_on_amazon(monitor_model, headless=True):
 
             # Get the price
             price_result = n.act("What is the current price of this monitor?")
-            results["price"] = price_result.response
+            results["price"] = price_result.response or "N/A"  # Default to "N/A" if None
 
             # Get the rating
             rating_result = n.act("What is the average rating of this monitor?")
-            results["rating"] = rating_result.response
+            results["rating"] = rating_result.response or "N/A"  # Default to "N/A" if None
 
             # Get screen size
             size_result = n.act("What is the screen size of this monitor?")
-            results["size"] = size_result.response
+            results["size"] = size_result.response or "N/A"  # Default to "N/A" if None
 
         print(f"[Thread {session_id}] ✅ Completed search for {monitor_model}")
     except Exception as e:
@@ -62,24 +63,28 @@ def parallel_monitor_comparison():
     all_results = []
     start_time = time.time()
 
-    # Execute searches in parallel with proper error handling
-    # Use fewer workers to avoid resource contention
+    # On machines with fewer cores, running too many browser instances can cause failures
     max_workers = min(3, len(monitor_models))
     print(f"Starting parallel execution with {max_workers} workers")
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all search tasks - each gets a fresh NovaAct instance
-        future_to_model = {
-            executor.submit(check_monitor_on_amazon, model, True): model
-            for model in monitor_models
-        }
+        # Submit search tasks with a delay between submissions
+        future_to_model = {}
+        for model in monitor_models:
+            # Submit the task
+            future = executor.submit(check_monitor_on_amazon, model, True)
+            future_to_model[future] = model
+
+            # Add a delay before submitting the next task to avoid resource spikes
+            time.sleep(5)  # Give 5 seconds between browser startups
 
         # Process results as they complete
         for future in as_completed(future_to_model):
             model = future_to_model[future]
             try:
                 results = future.result()
-                all_results.append(results)
+                if results:  # Make sure results isn't None
+                    all_results.append(results)
             except Exception as e:
                 print(f"❌ Error processing results for {model}: {e}")
 
@@ -91,14 +96,18 @@ def parallel_monitor_comparison():
     print("-" * 80)
     print(f"{'Model':<30} {'Price':<10} {'Rating':<10} {'Size':<10}")
     print("-" * 80)
+    
     for result in all_results:
-        print(
-            f"{result['model'][:28]:<30} {result['price']:<10} {result['rating']:<10} {result['size']:<10}"
-        )
+        # Ensure all values are strings to prevent formatting errors
+        model = str(result.get('model', 'Unknown'))[:28] if result.get('model') is not None else 'Unknown'
+        price = str(result.get('price', 'N/A')) if result.get('price') is not None else 'N/A'
+        rating = str(result.get('rating', 'N/A')) if result.get('rating') is not None else 'N/A'
+        size = str(result.get('size', 'N/A')) if result.get('size') is not None else 'N/A'
+        
+        print(f"{model:<30} {price:<10} {rating:<10} {size:<10}")
 
     return all_results
 
 
 if __name__ == "__main__":
     parallel_monitor_comparison()
-

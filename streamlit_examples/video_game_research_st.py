@@ -1,14 +1,15 @@
-import streamlit as st
-import pandas as pd
+import concurrent.futures
+import json
+import os
 import time
 import uuid
-import os
-import json
-import concurrent.futures
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import pandas as pd
+import streamlit as st
 from nova_act import NovaAct
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
 
 
 # Data models for game information

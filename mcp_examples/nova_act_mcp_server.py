@@ -2,14 +2,14 @@
 
 import asyncio
 import json
+import multiprocessing
 import os
 import tempfile
-from typing import Any, Dict, List, Optional
 import threading
-import multiprocessing
+from typing import Any, Dict, List, Optional
 
 from mcp.server.fastmcp import FastMCP
-from nova_act import NovaAct, ActError
+from nova_act import ActError, NovaAct
 
 # Initialize FastMCP server
 mcp = FastMCP("nova-act-server")
