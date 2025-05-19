@@ -3,3 +3,6 @@ nova-act
 streamlit
 pandas
 boto3
+strands-agents 
+strands-agents-tools
+uv
