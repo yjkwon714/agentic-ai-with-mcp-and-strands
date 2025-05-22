@@ -13,6 +13,7 @@ import time
 from mcp.client.streamable_http import streamablehttp_client
 from mcp.server import FastMCP
 from strands import Agent
+from strands.models import BedrockModel
 from strands.tools.mcp.mcp_client import MCPClient
 
 
@@ -135,7 +136,11 @@ def main():
         print(f"Available MCP tools: {[tool.tool_name for tool in tools]}")
 
         # Create an agent with the MCP tools
-        agent = Agent(system_prompt=system_prompt, tools=tools)
+        bedrock_model = BedrockModel(
+            model_id="us.amazon.nova-lite-v1:0",
+            temperature=0.3,
+        )
+        agent = Agent(model=bedrock_model, system_prompt=system_prompt, tools=tools)
 
         # Interactive loop
         print("\nCalculator Agent Ready! Type 'exit' to quit.\n")
