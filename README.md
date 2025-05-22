@@ -1,139 +1,143 @@
-# Building Agents with Amazon Nova Act and MCP
+# Strands Agents: A Multi-Agent Framework for Building Intelligent Applications
 
-This repository demonstrates how to build intelligent web automation agents using Amazon Nova Act integrated with MCP (Model Context Protocol). MCP provides a standardized way to connect AI models to different data sources and tools - think of it like a "USB-C port for AI applications."
+Strands Agents is a powerful Python framework that enables developers to build sophisticated multi-agent systems with specialized capabilities including knowledge management, calculator functions, meta-tooling, and workflow orchestration. The framework provides seamless integration with external services and robust agent communication.
 
-![Amazon Nova Act](./images/nova_act_img.jpg)
+The framework offers a modular architecture where specialized agents can work together to handle complex tasks. Key features include:
+- Multi-agent orchestration with specialized agents for different domains (math, language, computer science, etc.)
+- Dynamic tool creation and management through meta-tooling capabilities
+- Knowledge base integration for persistent information storage and retrieval
+- Integration with external services like weather APIs and Amazon
+- Built-in calculator functionality through MCP (Modular Communication Platform)
+- Streamlit-based UI components for interactive applications
 
-## Overview
-
-This project showcases the integration between:
-
-- **Amazon Nova Act**: A powerful web automation tool for creating agents that interact with web pages
-- **MCP (Model Context Protocol)**: An open protocol that standardizes how applications provide context to LLMs
-- **Amazon Bedrock**: Managed service that provides foundation models through a unified API
-
-### Architecture
-
-The project follows MCP's client-server architecture:
-
-- **MCP Host**: Claude Desktop or other AI tools that want to access Nova Act capabilities
-- **MCP Client**: Protocol clients maintaining 1:1 connections with the Nova Act server
-- **MCP Server**: A Nova Act server exposing web automation capabilities through the standardized protocol
-- **Remote Services**: Web services that Nova Act interacts with through browser automation
-
-### Key Features
-
-- Standardized LLM integration through MCP
-- Automated web navigation and interaction via Nova Act
-- Parallel execution of multiple browser tasks
-- Data extraction and processing
-- Screenshot capture and visual verification
-- Session management and browser control
-- Seamless integration with Claude Desktop
-- Access to foundation models via Amazon Bedrock
-
-## Prerequisites
-
-- Operating System: MacOS or Ubuntu (Nova Act requirements)
-- Python 3.10 or higher
-- A valid Nova Act API key (obtain from https://nova.amazon.com/act)
-- Node.js (for Claude Desktop integration)
-- Amazon Bedrock access:
-  - [Amazon Bedrock enabled in your AWS account](https://docs.aws.amazon.com/bedrock/latest/userguide/getting-started.html)
-  - Claude 3.5 Sonnet V2 model enabled (this is default for this example)
-  - AWS credentials and region properly configured - [AWS CLI Quickstart Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
-
-## Project Structure
-
-The repository contains two main example directories:
-
-### 1. Streamlit Examples (`streamlit_examples/`)
-- `video_game_research_st.py`: A comprehensive tool that:
-  - Finds top games for any selected gaming system
-  - Searches Amazon in parallel for pricing and details
-  - Creates interactive result tables
-  - Saves research data for future reference
-
-### 2. MCP Examples (`mcp_examples/`)
-- `nova_act_mcp_server.py`: MCP-compliant server implementation exposing Nova Act capabilities
-- `nova_act_mcp_client.py`: Example MCP client implementation
-- Demonstrates integration with Claude Desktop and other MCP hosts
-
-### 3. Nova Act Examples (`nova_act_examples/`)
-- `get_coffee_maker.py`: Simple example demonstrating how to:
-  - Initialize Nova Act with a starting web page
-  - Perform basic web search and selection actions
-  - Extract information from product pages
-- `multi_monitor.py`: Advanced example showing:
-  - Parallel execution of web tasks using ThreadPoolExecutor
-  - Searching and comparing multiple products simultaneously
-  - Structured data extraction and comparison
-  - Error handling for robust web automation
-
-## Getting Started
-
-1. Clone this repository
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Set your Nova Act API key:
-   ```bash
-   export NOVA_ACT_API_KEY="your_api_key"
-   ```
-
-4. Make sure your environment has AWS configured correctly - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html
-
-## Usage
-
-### Running Streamlit Examples
-```bash
-cd streamlit_examples
-streamlit run video_game_research_st.py
+## Repository Structure
+```
+strands_agents/
+├── mcp_examples/                    # Basic MCP server/client examples
+│   ├── hello_world_mcp_client.py   # Example MCP client implementation
+│   └── hello_world_mcp_server.py   # Example MCP server implementation
+├── strands_calculator_mcp_agent/    # Calculator agent using MCP
+├── strands_knowledgebase_agent/    # Knowledge storage and retrieval agent
+├── strands_memory_agent/           # Memory management agent
+├── strands_meta_tooling_agent/     # Dynamic tool creation agent
+├── strands_multi_agent/            # Multi-agent orchestration examples
+│   ├── teachers_assistant.py       # Main orchestrator agent
+│   └── specialized agents/         # Domain-specific agents (math, language, etc.)
+├── strands_nova/                   # Nova integration examples
+├── strands_weather_agent/          # Weather service integration
+├── strands_workflow_agent/         # Workflow orchestration agent
+└── streamlit_examples/             # Streamlit UI integration examples
 ```
 
-### Running the MCP Server and Client
-```bash
-cd mcp_examples
-python nova_act_mcp_client.py nova_act_mcp_server.py
+## Usage Instructions
+### Prerequisites
+- Python 3.7+
+- pip package manager
+- Virtual environment (recommended)
+
+Required Python packages:
+```
+mcp[cli]
+nova-act
+streamlit
+pandas
+boto3
+strands-agents
+strands-agents-tools
+uv
 ```
 
-The command above will:
-1. Start the MCP server that exposes Nova Act capabilities
-2. Launch the MCP client that connects to the server
-3. Enable communication between Claude and the Nova Act browser automation
+### Installation
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-### Claude Desktop Integration
+# Install dependencies
+pip install -r requirements.txt
+```
 
-For setting up and using this server with Claude Desktop, please follow the official [Claude Desktop MCP Setup Guide](https://modelcontextprotocol.io/quickstart/user). The guide covers:
+### Quick Start
+1. Basic Agent Usage:
+```python
+from strands import Agent
+from strands_tools import memory
 
-- Installing and configuring Claude Desktop
-- Setting up MCP servers in Claude Desktop
-- Troubleshooting common issues
-- Example usage and best practices
+# Create a simple agent
+agent = Agent(tools=[memory])
 
-## Best Practices
+# Use the agent
+response = agent("Remember that my favorite color is blue")
+```
 
-1. Follow MCP's standardized approach for exposing capabilities
-2. Always close browser sessions when done
-3. Use headless mode for automated tasks not requiring visual feedback
-4. Break down complex actions into smaller, specific instructions
-5. Use schemas when expecting structured data responses
-6. Save important results to files for persistence
-7. Handle errors appropriately in your code
+2. Running the Calculator Example:
+```bash
+python strands_calculator_mcp_agent_example/mcp_calculator.py
+```
 
-## Security
+3. Starting the Multi-Agent Teacher Assistant:
+```bash
+python strands_multi_agent_example/teachers_assistant.py
+```
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+### More Detailed Examples
+1. Knowledge Base Operations:
+```python
+from strands import Agent
+from strands_tools import memory
 
-## License
+agent = Agent(tools=[memory])
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+# Store information
+agent.tool.memory(action="store", content="The capital of France is Paris")
 
-## Additional Resources
+# Retrieve information
+result = agent.tool.memory(
+    action="retrieve",
+    query="What is the capital of France?",
+    min_score=0.4
+)
+```
 
-- [MCP Documentation](https://modelcontextprotocol.io/introduction)
-- [Nova Act Documentation](https://nova.amazon.com/act)
-- [Amazon Bedrock Documentation](https://docs.aws.amazon.com/bedrock/)
+2. Weather Information:
+```python
+from strands_weather_agent_example.weather_forecaster import weather_agent
+
+# Get weather forecast
+response = weather_agent("What's the weather like in Seattle?")
+```
+
+### Troubleshooting
+Common Issues:
+1. MCP Connection Errors
+   - Error: "Connection refused"
+   - Solution: Ensure MCP server is running on the correct port
+   - Debug: `netstat -an | grep 8000`
+
+2. Memory Tool Issues
+   - Error: "Knowledge base not found"
+   - Solution: Set STRANDS_KNOWLEDGE_BASE_ID environment variable
+   - Debug: `export STRANDS_KNOWLEDGE_BASE_ID=your_kb_id`
+
+3. Agent Initialization Failures
+   - Error: "No tools available"
+   - Solution: Verify tool imports and initialization
+   - Debug: Enable verbose logging with `STRANDS_DEBUG=1`
+
+## Data Flow
+The Strands Agents framework processes data through a coordinated multi-agent system with specialized components handling different aspects of the workflow.
+
+```ascii
+User Input → Orchestrator Agent → Specialized Agents → External Services
+     ↑                                    ↓
+     └────────────── Response ───────────┘
+```
+
+Key Component Interactions:
+1. User queries are received by the orchestrator agent (e.g., TeachAssist)
+2. Orchestrator analyzes the query and routes to appropriate specialized agents
+3. Specialized agents process domain-specific tasks using their tools
+4. External services (MCP, APIs) are accessed as needed
+5. Results are aggregated and formatted by the orchestrator
+6. Responses are returned to the user in a consistent format
+7. Knowledge and context are maintained across interactions
