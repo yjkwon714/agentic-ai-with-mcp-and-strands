@@ -9,11 +9,13 @@ A specialized Strands agent that is the orchestrator to utilize sub-agents and t
 """
 
 from strands import Agent
+from strands.models import BedrockModel
 from strands_tools import file_read, file_write, editor
+
+from computer_science_assistant import computer_science_assistant
 from english_assistant import english_assistant
 from language_assistant import language_assistant
 from math_assistant import math_assistant
-from computer_science_assistant import computer_science_assistant
 from no_expertise import general_assistant
 
 
@@ -45,8 +47,15 @@ You are TeachAssist, a sophisticated educational orchestrator designed to coordi
 Always confirm your understanding before routing to ensure accurate assistance.
 """
 
+# Specify the Bedrock ModelID
+# You can also try: "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+bedrock_model = BedrockModel(
+    model_id="us.amazon.nova-pro-v1:0",
+    temperature=0.3,
+)
 # Create a file-focused agent with selected tools
 teacher_agent = Agent(
+    model=bedrock_model,  # Remove this line to use the default model
     system_prompt=TEACHER_SYSTEM_PROMPT,
     callback_handler=None,
     tools=[math_assistant, language_assistant, english_assistant, computer_science_assistant, general_assistant],
