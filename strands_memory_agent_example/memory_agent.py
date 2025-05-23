@@ -54,6 +54,7 @@ import logging
 from dotenv import load_dotenv
 
 from strands import Agent
+from strands.models import BedrockModel
 from strands_tools import mem0_memory, use_llm
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,13 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Set AWS credentials and configuration
+OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST', None)
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', None)
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
+if AWS_ACCESS_KEY_ID is None or AWS_SECRET_ACCESS_KEY is None:
+    print("Warning: AWS Access keys have not been set up")
+if OPENSEARCH_HOST is None:
+    print("Warning: OPENSEARCH_HOST has not been set up")
 # os.environ["AWS_REGION"] = "us-west-2"
 # os.environ['OPENSEARCH_HOST'] = "your-opensearch-host.us-west-2.aoss.amazonaws.com"
 # os.environ['AWS_ACCESS_KEY_ID'] = "your-aws-access-key-id"
@@ -86,8 +94,15 @@ Key Rules:
 - Politely indicate when information is unavailable
 """
 
+# Setup Bedrock
+bedrock_model = BedrockModel(
+    model_id="anthropic.claude-3-5-sonnet-20241022-v2:0",  # "us.amazon.nova-pro-v1:0"
+    temperature=0.1,
+)
+
 # Create an agent with memory capabilities
 memory_agent = Agent(
+    model=bedrock_model,  # Remove this line to use default model
     system_prompt=MEMORY_SYSTEM_PROMPT,
     tools=[mem0_memory, use_llm],
 )
