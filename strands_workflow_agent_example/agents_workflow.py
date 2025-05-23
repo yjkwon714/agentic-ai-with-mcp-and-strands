@@ -26,6 +26,7 @@ This example demonstrates an agentic workflow using Strands agents with web rese
 """
 
 from strands import Agent
+from strands.models import BedrockModel
 from strands_tools import http_request
 
 
@@ -45,8 +46,13 @@ def run_research_workflow(user_input):
     
     # Step 1: Researcher Agent with enhanced web capabilities
     print("\nStep 1: Researcher Agent gathering web information...")
-    
+
+    bedrock_model = BedrockModel(
+        model_id="us.amazon.nova-lite-v1:0",
+        temperature=0.1,
+    )
     researcher_agent = Agent(
+        model=bedrock_model,
         system_prompt=(
             "You are a Researcher Agent that gathers information from the web. "
             "1. Determine if the input is a research query or factual claim "
@@ -72,6 +78,7 @@ def run_research_workflow(user_input):
     print("Step 2: Analyst Agent analyzing findings...")
     
     analyst_agent = Agent(
+        model=bedrock_model,
         system_prompt=(
             "You are an Analyst Agent that verifies information. "
             "1. For factual claims: Rate accuracy from 1-5 and correct if needed "
@@ -95,6 +102,7 @@ def run_research_workflow(user_input):
     print("Step 3: Writer Agent creating final report...")
     
     writer_agent = Agent(
+        model=bedrock_model,
         system_prompt=(
             "You are a Writer Agent that creates clear reports. "
             "1. For fact-checks: State whether claims are true or false "
