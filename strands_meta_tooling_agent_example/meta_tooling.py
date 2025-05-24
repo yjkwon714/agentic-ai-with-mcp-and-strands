@@ -11,6 +11,7 @@ It creates custom tools using the Agent's built-in tools for file operations and
 import os
 
 from strands import Agent
+from strands.models import BedrockModel
 from strands_tools import shell, editor, load_tool
 
 # Define an enhanced system prompt for our tool builder agent
@@ -105,8 +106,14 @@ You should detect user intents to create tools from natural language (like "crea
 """
 
 # Create our agent with the necessary tools and implicit tool calling enabled
+bedrock_model = BedrockModel(
+    model_id="anthropic.claude-3-5-sonnet-20241022-v2:0",  # This example works better with Anthropic models
+    temperature=0.3,
+)
 agent = Agent(
-    system_prompt=TOOL_BUILDER_SYSTEM_PROMPT, tools=[load_tool, shell, editor]
+    model=bedrock_model,
+    system_prompt=TOOL_BUILDER_SYSTEM_PROMPT,
+    tools=[load_tool, shell, editor]
 )
 
 
