@@ -147,9 +147,24 @@ if "messages" not in st.session_state:
     
 if "memory_backend" not in st.session_state:
     st.session_state.memory_backend = "bedrock_kb"
+    
+if "model_id" not in st.session_state:
+    st.session_state.model_id = "us.amazon.nova-pro-v1:0"
+    
+if "enabled_agents" not in st.session_state:
+    st.session_state.enabled_agents = {
+        "math_assistant": True,
+        "language_assistant": True,
+        "english_assistant": True,
+        "computer_science_assistant": True,
+        "general_assistant": True
+    }
 
-# Add sidebar for memory backend selection
-st.sidebar.title("Memory Backend")
+# Add sidebar for settings
+st.sidebar.title("Settings")
+
+# Memory backend selection
+st.sidebar.subheader("Memory Backend")
 memory_options = ["Bedrock Knowledge Base"]
 if OPENSEARCH_HOST:
     memory_options.append("OpenSearch Memory")
@@ -166,34 +181,91 @@ if selected_backend == "Bedrock Knowledge Base":
 elif selected_backend == "OpenSearch Memory":
     st.session_state.memory_backend = "opensearch"
 
+# Model selection
+st.sidebar.subheader("Model Selection")
+model_options = [
+    "us.amazon.nova-pro-v1:0",
+    "us.amazon.nova-lite-v1:0",
+    "us.amazon.nova-micro-v1:0",
+    "anthropic.claude-3-5-haiku-20241022-v1:0",
+    "anthropic.claude-3-7-sonnet-20250219-v1:0",
+    "anthropic.claude-sonnet-4-20250514-v1:0"
+]
+selected_model = st.sidebar.selectbox(
+    "Select Bedrock model:",
+    model_options,
+    index=model_options.index(st.session_state.model_id)
+)
+st.session_state.model_id = selected_model
+
+# Teacher agent toggles
+st.sidebar.subheader("Teacher Agents")
+st.session_state.enabled_agents["math_assistant"] = st.sidebar.checkbox(
+    "Math Assistant", 
+    value=st.session_state.enabled_agents["math_assistant"]
+)
+st.session_state.enabled_agents["language_assistant"] = st.sidebar.checkbox(
+    "Language Assistant", 
+    value=st.session_state.enabled_agents["language_assistant"]
+)
+st.session_state.enabled_agents["english_assistant"] = st.sidebar.checkbox(
+    "English Assistant", 
+    value=st.session_state.enabled_agents["english_assistant"]
+)
+st.session_state.enabled_agents["computer_science_assistant"] = st.sidebar.checkbox(
+    "Computer Science Assistant", 
+    value=st.session_state.enabled_agents["computer_science_assistant"]
+)
+st.session_state.enabled_agents["general_assistant"] = st.sidebar.checkbox(
+    "General Assistant", 
+    value=st.session_state.enabled_agents["general_assistant"]
+)
+
 # Display conversation history
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
 # Initialize the teacher agent
-@st.cache_resource
+@st.cache_resource(hash_funcs={dict: lambda _: None})
 def get_teacher_agent():
-    # Specify the Bedrock ModelID
+    # Specify the Bedrock ModelID from session state
     bedrock_model = BedrockModel(
-        model_id="us.amazon.nova-pro-v1:0",
+        model_id=st.session_state.model_id,
         temperature=0.3,
     )
+    
+    # Filter tools based on enabled agents
+    enabled_tools = []
+    if st.session_state.enabled_agents["math_assistant"]:
+        enabled_tools.append(math_assistant)
+    if st.session_state.enabled_agents["language_assistant"]:
+        enabled_tools.append(language_assistant)
+    if st.session_state.enabled_agents["english_assistant"]:
+        enabled_tools.append(english_assistant)
+    if st.session_state.enabled_agents["computer_science_assistant"]:
+        enabled_tools.append(computer_science_assistant)
+    if st.session_state.enabled_agents["general_assistant"]:
+        enabled_tools.append(general_assistant)
+    
+    # Ensure at least one tool is available
+    if not enabled_tools:
+        enabled_tools = [general_assistant]
     
     # Create the teacher agent with specialized tools
     return Agent(
         model=bedrock_model,
         system_prompt=TEACHER_SYSTEM_PROMPT,
         callback_handler=None,
-        tools=[math_assistant, language_assistant, english_assistant, computer_science_assistant, general_assistant],
+        tools=enabled_tools,
     )
 
 # Initialize the knowledge base agent
-@st.cache_resource
+@st.cache_resource(hash_funcs={dict: lambda _: None})
 def get_kb_agent():
-    # Specify the Bedrock ModelID
+    # Specify the Bedrock ModelID from session state
     bedrock_model = BedrockModel(
-        model_id="us.amazon.nova-pro-v1:0",
+        model_id=st.session_state.model_id,
         temperature=0.3,
     )
     
@@ -204,11 +276,11 @@ def get_kb_agent():
     )
 
 # Initialize the OpenSearch memory agent
-@st.cache_resource
+@st.cache_resource(hash_funcs={dict: lambda _: None})
 def get_memory_agent():
-    # Specify the Bedrock ModelID
+    # Specify the Bedrock ModelID from session state
     bedrock_model = BedrockModel(
-        model_id="us.amazon.nova-pro-v1:0",
+        model_id=st.session_state.model_id,
         temperature=0.3,
     )
     
