@@ -100,7 +100,7 @@ if __name__ == "__main__":
                 break
 
             # Call the memory agent
-            memory_agent(user_input)
+            memory_agent(user_input, user_id=USER_ID)
 
         except KeyboardInterrupt:
             print("\n\nExecution interrupted. Exiting...")
