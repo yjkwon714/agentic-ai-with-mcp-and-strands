@@ -1,10 +1,11 @@
+boto3
 mcp[cli]
 nova-act
-streamlit
-pandas
-boto3
 opensearch-py
+pandas
+retrying
 strands-agents 
-strands-agents-tools
+strands-agents-tools[mem0_memory]
+streamlit
 tqdm
 uv
