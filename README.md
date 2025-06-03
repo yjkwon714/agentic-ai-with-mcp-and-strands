@@ -31,19 +31,22 @@ strands_agents/
 
 ## Usage Instructions
 ### Prerequisites
-- Python 3.7+
-- pip package manager
+- Python 3.10+
+- uv or pip package manager
 - Virtual environment (recommended)
 
 Required Python packages:
 ```
+boto3
 mcp[cli]
 nova-act
-streamlit
+opensearch-py
 pandas
-boto3
-strands-agents
-strands-agents-tools
+retrying
+strands-agents 
+strands-agents-tools[mem0_memory]
+streamlit
+tqdm
 uv
 ```
 
