@@ -145,10 +145,13 @@ if __name__ == "__main__":
     print("\n🧠 Knowledge Base Agent 🧠\n")
     print("This agent helps you store and retrieve information from your knowledge base.")
     print("Try commands like:")
-    print("- \"Remember that my birthday is on July 25\"")
-    print("- \"What day is my birthday?\"")
+    print("- \"List the motor patterns associated with cat play\"")
+    print("- \"Tell me about dog grooming\"")
     print("\nType your request below or 'exit' to quit:")
     
+    # Bypass tool consent
+    os.environ["BYPASS_TOOL_CONSENT"] = "true"
+
     # Interactive loop
     while True:
         try:
