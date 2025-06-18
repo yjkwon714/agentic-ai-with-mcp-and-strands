@@ -85,6 +85,11 @@ else:
     SYSTEM_PROMPT = DUCKDUCKGO_SYSTEM_PROMPT
     logger.info("Tavily API not found. Using the Duck Duck Go API for search queries")
 
+bedrock_model = BedrockModel(
+    model_id="us.amazon.nova-lite-v1:0",
+    temperature=0.1,
+)
+
 @tool
 def web_search(query: str, max_results: int = 3):
     """
@@ -126,10 +131,6 @@ def run_research_workflow(user_input):
     # Step 1: Researcher Agent with enhanced web capabilities
     print("\nStep 1: Researcher Agent gathering web information...")
 
-    bedrock_model = BedrockModel(
-        model_id="us.amazon.nova-lite-v1:0",
-        temperature=0.1,
-    )
     researcher_agent = Agent(
         model = bedrock_model,
         system_prompt = RESEARCHER_SYSTEM_PROMPT,
@@ -205,11 +206,13 @@ if __name__ == "__main__":
     print("\nOptions:")
     print("  'demo' - Demonstrate search example")
     print("  'exit' - Exit the program")
+    print("  'web search on [search item]' - Perform web search on search item")
     print("\nTry research questions or fact-check claims.")
     print("\nExamples:")
     print("- \"What are quantum computers?\"")
     print("- \"Lemon cures cancer\"")
     print("- \"What is the news right now vibe coding?\"")
+    print("- \"Web search on interest rates\"")
     
     # Interactive loop
     while True:
@@ -220,8 +223,19 @@ if __name__ == "__main__":
                 print("\nGoodbye! 👋")
                 break
             
-            # Process the input through the workflow of agents
-            final_report = run_research_workflow(user_input)
+            if user_input.lower().startswith("web search on"):
+                # Perform regular web search
+                web_agent = Agent(
+                    model = bedrock_model,
+                    system_prompt = SYSTEM_PROMPT,
+                    tools = [web_search],
+                    callback_handler = None
+                )
+                response = web_agent(user_input)
+                print(response)
+            else:
+                # Process the input through the workflow of agents
+                final_report = run_research_workflow(user_input)
         except KeyboardInterrupt:
             print("\n\nExecution interrupted. Exiting...")
             break
