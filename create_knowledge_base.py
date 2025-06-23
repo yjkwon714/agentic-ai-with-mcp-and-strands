@@ -113,7 +113,8 @@ def create_n_sync_bedrock_knowledge_base(name, description, s3_bucket):
     knowledge_base = BedrockKnowledgeBase(
         kb_name=name,
         kb_description=description,
-        data_bucket_name=s3_bucket
+        data_bucket_name=s3_bucket,
+        embedding_model = "amazon.titan-embed-text-v2:0"
     )
     time.sleep(30)
     knowledge_base.start_ingestion_job()
@@ -131,8 +132,7 @@ def main():
     knowledge_base_id = create_n_sync_bedrock_knowledge_base(
         name = f'pets-kb-{random_suffix}',
         description = "Pets Knowledge Base on cats and dogs",
-        s3_bucket = s3_bucket,
-        embedding_model = "amazon.titan-embed-text-v2:0"
+        s3_bucket = s3_bucket
     )
     print(f'Created Bedrock Knowledge Base with ID: {knowledge_base_id}')
 
