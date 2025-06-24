@@ -116,8 +116,10 @@ def create_n_sync_bedrock_knowledge_base(name, description, s3_bucket):
         data_bucket_name=s3_bucket,
         embedding_model = "amazon.titan-embed-text-v2:0"
     )
+    print("Sleeping for 30 seconds.....")
     time.sleep(30)
-    knowledge_base.start_ingestion_job()
+    # The following is not required for CUSTOM data sources (but should be added back for S3 data sources)
+    # knowledge_base.start_ingestion_job()
     return knowledge_base.get_knowledge_base_id()
 
 def main():
