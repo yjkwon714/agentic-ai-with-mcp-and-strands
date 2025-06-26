@@ -569,6 +569,13 @@ class BedrockKnowledgeBase:
         pp.pprint(self.knowledge_base["knowledgeBaseId"])
         return self.knowledge_base["knowledgeBaseId"]
 
+    def get_datasource_id(self):
+        """
+        Get Data Source Id
+        """
+        pp.pprint(self.data_source["dataSourceId"])
+        return self.data_source["dataSourceId"]
+
     def get_bucket_name(self):
         """
         Get the name of the bucket connected with the Knowledge Base Data Source
