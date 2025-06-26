@@ -1,11 +1,13 @@
 import boto3
 import io
+import json
 import logging
 import os
 import requests
 import time
 import uuid
 import zipfile
+
 
 from knowledge_base import BedrockKnowledgeBase
 from tqdm import tqdm
@@ -120,20 +122,54 @@ def create_n_sync_bedrock_knowledge_base(name, description, s3_bucket):
     time.sleep(30)
     # The following is not required for CUSTOM data sources (but should be added back for S3 data sources)
     # knowledge_base.start_ingestion_job()
-    return knowledge_base.get_knowledge_base_id()
+    knowledge_base_id = knowledge_base.get_knowledge_base_id()
+    data_source_id = knowledge_base.get_datasource_id()
+
+    # Upload Folder
+    CUSTOM_DOCUMENT_IDENTIFIER='pets-kb-pdfs'
+    kb_folder = 'pets-kb-files'
+    kb_files = [ file for file in os.listdir(kb_folder) if file.endswith('.pdf') ]
+    uri_list = [ f's3://{s3_bucket}/{file}' for file in kb_files ]
+
+    for s3_uri in uri_list:
+        print(f'Uploading to: {s3_uri}')
+        response = bedrock_agent_client.ingest_knowledge_base_documents(
+            clientToken = 'KnowledgeBase-UOGWU2BSLP-Ingestion-01',
+            dataSourceId = data_source_id,
+            documents = [
+                {
+                    'content': {
+                        'custom': {
+                            'customDocumentIdentifier': {
+                                'id': CUSTOM_DOCUMENT_IDENTIFIER
+                            },
+                            's3Location': {
+                                'uri': s3_uri
+                            },
+                            'sourceType': 'S3_LOCATION'
+                        },
+                        'dataSourceType': 'CUSTOM'
+                    }
+                }
+            ],
+            knowledgeBaseId = knowledge_base_id
+        )
+        print(json.dumps(response, indent=2, default=str))
+    return knowledge_base_id
+
 
 def main():
-    download_file("https://d2qrbbbqnxtln.cloudfront.net/pets-kb-files.zip")
-    extract_zip_file("pets-kb-files.zip")
-    s3_bucket = create_s3_bucket_with_random_suffix("bedrock-kb-bucket")
-    print(f"Created S3 bucket: {s3_bucket}")
+    download_file('https://d2qrbbbqnxtln.cloudfront.net/pets-kb-files.zip')
+    extract_zip_file('pets-kb-files.zip')
+    s3_bucket = create_s3_bucket_with_random_suffix('bedrock-kb-bucket')
+    print(f'Created S3 bucket: {s3_bucket}')
     upload_directory("pets-kb-files", s3_bucket)
 
     # Create Bedrock KnowledgeBase
     random_suffix = str(uuid.uuid4())[:8]
     knowledge_base_id = create_n_sync_bedrock_knowledge_base(
         name = f'pets-kb-{random_suffix}',
-        description = "Pets Knowledge Base on cats and dogs",
+        description = 'Pets Knowledge Base on cats and dogs',
         s3_bucket = s3_bucket
     )
     print(f'Created Bedrock Knowledge Base with ID: {knowledge_base_id}')
