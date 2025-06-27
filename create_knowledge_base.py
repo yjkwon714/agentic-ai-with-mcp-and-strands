@@ -1,8 +1,7 @@
 import boto3
-import io
-import json
 import logging
 import os
+import re
 import requests
 import time
 import uuid
@@ -125,23 +124,28 @@ def create_n_sync_bedrock_knowledge_base(name, description, s3_bucket):
     knowledge_base_id = knowledge_base.get_knowledge_base_id()
     data_source_id = knowledge_base.get_datasource_id()
 
-    # Upload Folder
-    CUSTOM_DOCUMENT_IDENTIFIER='pets-kb-pdfs'
+    # Ingest all files in folder into Bedrock Knowledge Base Custom Data Source
     kb_folder = 'pets-kb-files'
     kb_files = [ file for file in os.listdir(kb_folder) if file.endswith('.pdf') ]
-    uri_list = [ f's3://{s3_bucket}/{file}' for file in kb_files ]
 
-    for s3_uri in uri_list:
-        print(f'Uploading to: {s3_uri}')
+    for kb_file in kb_files:
+        s3_uri = f's3://{s3_bucket}/{kb_file}'
+
+        # Create custom document identifier from cleaned filename without extension
+        clean_filename = re.sub(r'[\s-]+', '-', kb_file)    
+        custom_document_identifier = os.path.splitext(clean_filename)[0]
+        custom_document_identifier = f'pets-{custom_document_identifier.lower()}'
+        
+        print(f'Ingesting {s3_uri} to Knowledge Base with Custom Document Identifier: {custom_document_identifier}')
         response = bedrock_agent_client.ingest_knowledge_base_documents(
-            clientToken = 'KnowledgeBase-UOGWU2BSLP-Ingestion-01',
+            clientToken = 'Bedrock-Knowledge-Base-Ingestion-01',
             dataSourceId = data_source_id,
             documents = [
                 {
                     'content': {
                         'custom': {
                             'customDocumentIdentifier': {
-                                'id': CUSTOM_DOCUMENT_IDENTIFIER
+                                'id': custom_document_identifier
                             },
                             's3Location': {
                                 'uri': s3_uri
@@ -154,7 +158,7 @@ def create_n_sync_bedrock_knowledge_base(name, description, s3_bucket):
             ],
             knowledgeBaseId = knowledge_base_id
         )
-        print(json.dumps(response, indent=2, default=str))
+        # print(json.dumps(response, indent=2, default=str))
     return knowledge_base_id
 
 
