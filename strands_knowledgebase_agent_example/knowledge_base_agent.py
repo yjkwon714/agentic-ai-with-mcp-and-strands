@@ -128,7 +128,7 @@ def run_kb_agent(query):
         result = agent.tool.memory(
             action="retrieve", 
             query=query,
-            min_score=0.4,  # Set reasonable minimum score threshold
+            min_score=0.1,  # Set reasonable minimum score threshold
             max_results=9   # Retrieve a good number of results
         )
         # Convert the result to a string to extract just the content text
@@ -145,8 +145,8 @@ if __name__ == "__main__":
     print("\n🧠 Knowledge Base Agent 🧠\n")
     print("This agent helps you store and retrieve information from your knowledge base.")
     print("Try commands like:")
-    print("- \"List the motor patterns associated with cat play\"")
-    print("- \"Tell me about dog grooming\"")
+    print("- \"Remember that my birthday is on July 25\"")
+    print("- \"What day is my birthday?\"")
     print("\nType your request below or 'exit' to quit:")
     
     # Bypass tool consent
