@@ -1,4 +1,5 @@
 import boto3
+import json
 import logging
 import os
 import re
@@ -53,14 +54,14 @@ def download_file(url):
         return False
 
 def extract_zip_file(zip_path):
-    destination = '.'
     try:
         with zipfile.ZipFile(zip_path, 'r') as f:
             file_list = f.namelist()
             total_files = len(file_list)
             print(f"Extracting {total_files} files from {zip_path}")
             for file in tqdm(file_list, desc="Extracting"):
-                f.extract(file, destination)
+                clean_filename = re.sub(r'[\s-]+', '-', file)
+                f.extract(file, f'./{clean_filename}')
 
         print(f"Successfully extracted {total_files} files")
         return True
@@ -128,37 +129,36 @@ def create_n_sync_bedrock_knowledge_base(name, description, s3_bucket):
     kb_folder = 'pets-kb-files'
     kb_files = [ file for file in os.listdir(kb_folder) if file.endswith('.pdf') ]
 
+    documents = []
     for kb_file in kb_files:
         s3_uri = f's3://{s3_bucket}/{kb_file}'
-
-        # Create custom document identifier from cleaned filename without extension
-        clean_filename = re.sub(r'[\s-]+', '-', kb_file)    
+        clean_filename = re.sub(r'[\s-]+', '-', kb_file)
         custom_document_identifier = os.path.splitext(clean_filename)[0]
         custom_document_identifier = f'pets-{custom_document_identifier.lower()}'
-        
-        print(f'Ingesting {s3_uri} to Knowledge Base with Custom Document Identifier: {custom_document_identifier}')
-        response = bedrock_agent_client.ingest_knowledge_base_documents(
-            clientToken = 'Bedrock-Knowledge-Base-Ingestion-01',
-            dataSourceId = data_source_id,
-            documents = [
-                {
-                    'content': {
-                        'custom': {
-                            'customDocumentIdentifier': {
-                                'id': custom_document_identifier
-                            },
-                            's3Location': {
-                                'uri': s3_uri
-                            },
-                            'sourceType': 'S3_LOCATION'
+        print(f'{s3_uri} -> Custom Document Identifier: "{custom_document_identifier}"')
+        documents.append(
+            {
+                'content': {
+                    'custom': {
+                        'customDocumentIdentifier': {
+                            'id': custom_document_identifier
                         },
-                        'dataSourceType': 'CUSTOM'
-                    }
+                        's3Location': {
+                            'uri': s3_uri
+                        },
+                        'sourceType': 'S3_LOCATION'
+                    },
+                    'dataSourceType': 'CUSTOM'
                 }
-            ],
-            knowledgeBaseId = knowledge_base_id
+            }
         )
-        # print(json.dumps(response, indent=2, default=str))
+
+    response = bedrock_agent_client.ingest_knowledge_base_documents(
+        dataSourceId = data_source_id,
+        documents=documents,
+        knowledgeBaseId = knowledge_base_id
+    )
+    print(json.dumps(response, indent=2, default=str))
     return knowledge_base_id
 
 
