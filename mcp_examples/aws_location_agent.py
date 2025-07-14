@@ -11,12 +11,14 @@ from strands.models.bedrock import BedrockModel
 from strands.tools.mcp.mcp_client import MCPClient
 
 # Set up logging
-logger = logging.getLogger('__name__')
-logging.getLogger("strands").setLevel(logging.INFO)
 logging.basicConfig(
-    format="%(levelname)s | %(name)s | %(message)s",
+    level=logging.INFO,
+    format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
     handlers=[logging.StreamHandler()]
 )
+logger = logging.getLogger(__name__)
+logging.getLogger("strands").setLevel(logging.INFO)
 
 HOME = os.getenv('HOME')
 BEDROCK_REGION = os.getenv("BEDROCK_REGION", 'us-west-2')
@@ -48,14 +50,14 @@ model = BedrockModel(
     temperature = 0.1
 )
 
-LOCATION_SYSTEM_PROMPT = """
-You are a chatbot assistant
-You have access to the tool 'Amazon Location Services'
-You should use the tool when users ask a question about maps, routing, or locations
-"Example prompts where the user intent is relevant to Amazon Location Services include:
-1. What is the latitude and longitude for {name of location}?
-2. Provide the address for latitude: {latitude} and longitude: {longitude}.
-"""
+LOCATION_SYSTEM_PROMPT = """You are a location services assistant with access to Amazon Location Services tools.
+
+Use the available tools to:
+- Find coordinates for addresses or place names
+- Get addresses from latitude/longitude coordinates
+- Search for places and locations
+
+Provide clear, accurate location information and coordinates in your responses."""
 
 prompts = [
     "Give me the latitude and longitude for the IOI Building, Singapore 018916",
