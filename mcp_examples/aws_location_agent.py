@@ -5,6 +5,7 @@ import os
 
 from botocore.config import Config
 from mcp import stdio_client, StdioServerParameters
+from shutil import which
 
 from strands import Agent
 from strands.models.bedrock import BedrockModel
@@ -27,7 +28,7 @@ BEDROCK_MODEL_ID = "us.amazon.nova-lite-v1:0"
 # Amazon Location Services MCP Server
 stdio_mcp_client = MCPClient(lambda: stdio_client(
     StdioServerParameters(
-        command = f'{HOME}/.local/bin/uvx',
+        command = which('uvx'),
         args = [ 'awslabs.aws-location-mcp-server@latest' ],
         env = {
           "AWS_REGION": BEDROCK_REGION,
