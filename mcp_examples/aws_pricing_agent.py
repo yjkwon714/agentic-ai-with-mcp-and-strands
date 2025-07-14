@@ -24,7 +24,7 @@ logging.getLogger("strands").setLevel(logging.INFO)
 
 HOME = os.getenv('HOME')
 BEDROCK_REGION = os.getenv("BEDROCK_REGION", 'us-west-2')
-BEDROCK_MODEL_ID = "us.amazon.nova-lite-v1:0"
+BEDROCK_MODEL_ID = "us.amazon.nova-pro-v1:0"
 
 # AWS Cost Explorer MCP Server
 stdio_mcp_client = MCPClient(lambda: stdio_client(
