@@ -5,6 +5,7 @@ import http.client
 import json
 import logging
 import os
+import sys
 
 from datetime import datetime, timedelta
 from botocore.config import Config
@@ -275,6 +276,21 @@ tripadvisor_agent = Agent(
     tools = [ search_tripadvisor_hotels ]
 )
 
+TRAVEL_MULTIAGENT_SYSTEM_PROMPT = """You are a comprehensive travel planning assistant that coordinates multiple travel services.
+
+You have access to specialized tools for:
+- Booking.com hotel searches
+- Booking.com flight searches
+
+When users ask for travel help, determine which services they need and coordinate between the appropriate tools to provide complete travel solutions."""
+
+travel_multi_agent = Agent(
+    model=model,
+    system_prompt=TRAVEL_MULTIAGENT_SYSTEM_PROMPT,
+    tools = [ search_hotel18, search_flights ]
+)
+
+
 def hotel_booking_demo(arrival_str, departure_str):
     prompt = f"""I need to book a hotel in New York City for a business trip. 
 I'll be arriving on {arrival_str} and departing on {departure_str}. 
@@ -283,7 +299,6 @@ Can you help me find some options?"""
     print(f"Sending prompt to agent: {prompt}")
     response = hotel_search_agent(prompt)
     print(f"Hotel search response: {response}")
-
 
 
 def flight_booking_demo(arrival_str, departure_str):
@@ -318,7 +333,6 @@ What can you recommend?"""
     print(f"TripAdvisor search response: {response}")
 
 
-
 def get_arrival_departure_str(days_timedelta = 2):
     # Calculate dates for one month from now
     today = datetime.now()
@@ -330,9 +344,8 @@ def get_arrival_departure_str(days_timedelta = 2):
     departure_str = departure_date.strftime('%Y-%m-%d')
     return arrival_str, departure_str
 
+
 if __name__ == '__main__':
-    import sys
-    
     # Default to flights if no argument is provided
     search_type = 'flights'
     
