@@ -71,8 +71,10 @@ def search_flights(from_id: str, to_id: str, departure_date: str, return_date: s
 
 
 @tool
-def search_hotels(latitude: str, longitude: str, arrival_date: str, departure_date: str, radius: str = "10", adults: str = "1", children_age: str = "0%2C17", room_qty: str = "1", units: str = "metric", page_number: str = "1", temperature_unit: str = "c", languagecode: str = "en-us", currency_code: str = "USD", location: str = "US") -> str:
-    """Search for hotels by geographic coordinates using the Booking.com API.
+def search_hotels15(latitude: str, longitude: str, arrival_date: str, departure_date: str, radius: str = "10", adults: str = "1", children_age: str = "0%2C17", room_qty: str = "1", units: str = "metric", page_number: str = "1", temperature_unit: str = "c", languagecode: str = "en-us", currency_code: str = "USD", location: str = "US") -> str:
+    """Search for hotels by latitude, longitude, search radius,
+    check-in & check-out dates using the Booking.com API
+    booking-com15.p.rapidapi.com
     
     Args:
         latitude: The latitude coordinate of the search location.
@@ -101,10 +103,10 @@ def search_hotels(latitude: str, longitude: str, arrival_date: str, departure_da
 
 
 @tool
-def search_hotel18(ne_latitude: str, ne_longitude: str, sw_latitude: str, sw_longitude: str, checkin_date: str, checkout_date: str, results_per_page: str = '20', page_number: str = '1', rooms: str = '1', adults: str = '1', languagecode: str = 'en-us', currency_code: str = 'HOTEL') -> str:
+def search_hotel18(ne_latitude: str, ne_longitude: str, sw_latitude: str, sw_longitude: str, checkin_date: str, checkout_date: str, results_per_page: str = '10', page_number: str = '1', rooms: str = '1', adults: str = '1', languagecode: str = 'en-us', currency_code: str = 'HOTEL') -> str:
     """Search for hotels by north-east latitude and longitude,
     southwest latitude and longitude, check-in & check-out dates
-    using the Booking.com API.
+    using the Booking.com API booking-com18.p.rapidapi.com
     
     Args:
         ne_latitude: Latitude of the northeastern corner of the search area.
@@ -134,7 +136,7 @@ def search_hotel18(ne_latitude: str, ne_longitude: str, sw_latitude: str, sw_lon
 
 
 @tool
-def search_airbnb(ne_latitude: str, ne_longitude: str, sw_latitude: str, sw_longitude: str, checkin_date: str, checkout_date: str, currency: str = 'USD', total_records: str = '20', adults: str = '1', rooms: str = '1', page_number: str = '1') -> str:
+def search_airbnb(ne_latitude: str, ne_longitude: str, sw_latitude: str, sw_longitude: str, checkin_date: str, checkout_date: str, currency: str = 'USD', total_records: str = '10', adults: str = '1', rooms: str = '1', page_number: str = '1') -> str:
     """Search for hotels by geographic coordinates using AIRBNB
     
     Args:
@@ -161,7 +163,7 @@ def search_airbnb(ne_latitude: str, ne_longitude: str, sw_latitude: str, sw_long
 
 
 @tool
-def search_tripadvisor_hotels(latitude: str, longitude: str, arrival_date: str, departure_date: str, adults: str = "1", children_age: str = "0%2C17", room_qty: str = "1", units: str = "metric", page_number: str = "1", temperature_unit: str = "c", languagecode: str = "en-us", currency_code: str = "USD", location: str = "US") -> str:
+def search_tripadvisor_hotels(latitude: str, longitude: str, arrival_date: str, departure_date: str, adults: str = "1", room_qty: str = "1", page_number: str = "1", currency_code: str = "USD") -> str:
     """Search for hotels by geographic coordinates using the Tripadvisor API.
     
     Args:
@@ -170,14 +172,9 @@ def search_tripadvisor_hotels(latitude: str, longitude: str, arrival_date: str, 
         arrival_date: Check-in date in YYYY-MM-DD format.
         departure_date: Check-out date in YYYY-MM-DD format.
         adults: Number of adults per room.
-        children_age: Ages of children, comma-separated and URL-encoded (e.g., "0%2C17").
         room_qty: Number of rooms to book.
-        units: Unit system for measurements ("metric" or "imperial").
         page_number: Page number for paginated results.
-        temperature_unit: Temperature unit ("c" for Celsius, "f" for Fahrenheit).
-        languagecode: Language code for results (e.g., "en-us").
         currency_code: Currency code for pricing (e.g., "USD").
-        location: Country code for location context.
         
     Returns:
         JSON string containing hotel search results.
