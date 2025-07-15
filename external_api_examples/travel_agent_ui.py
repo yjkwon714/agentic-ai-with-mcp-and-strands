@@ -53,6 +53,7 @@ arrival_str, departure_str = get_arrival_departure_str(days_timedelta=7)
 prompts = [
     f"Find me 5 hotels in New York for 1 adult from {arrival_str} to {departure_str}. Prioritise Mariott or IHG hotels. Provide additional info such as free cancellation, or whether breakfast is included",
     f"I need to book a flight from JFK to LAX. I'll be arriving on {arrival_str} and departing on {departure_str}. I have membership with Delta and Star Alliance. Recommend me 5 flights based on price and membership",
+    f"I need to plan a trip to London from {arrival_str} to {departure_str}. Please find me 5 hotels in central London and flights from JFK to LHR for these dates. For hotels, I prefer Hilton or Marriott properties with breakfast included. For flights, I have membership with Star Alliance airlines."
 ]
 
 # Set up Chainlit
