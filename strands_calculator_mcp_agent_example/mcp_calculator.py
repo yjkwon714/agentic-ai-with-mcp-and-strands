@@ -7,6 +7,7 @@ This example demonstrates how to:
 3. Use the calculator tools through natural language
 """
 
+import logging
 import threading
 import time
 
@@ -15,6 +16,16 @@ from mcp.server import FastMCP
 from strands import Agent
 from strands.models import BedrockModel
 from strands.tools.mcp.mcp_client import MCPClient
+
+# Set logging level to logging.WARNING
+logging.basicConfig(
+    level=logging.WARNING,
+    format='%(asctime)s | %(levelname)s | %(name)s | %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[logging.StreamHandler()]
+)
+logger = logging.getLogger(__name__)
+logging.getLogger("strands").setLevel(logging.WARNING)
 
 
 def start_calculator_server():
@@ -157,7 +168,7 @@ def main():
             response = agent(user_input)
 
             # Print the agent's response
-            print(f"Answer: {response}\n")
+            print(f"\nAnswer: {response}\n")
 
 
 if __name__ == "__main__":
