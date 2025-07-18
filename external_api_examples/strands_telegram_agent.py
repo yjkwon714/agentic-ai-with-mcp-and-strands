@@ -133,15 +133,12 @@ def main():
     print("\nTelegram API Strands Agent\n")
     print("This example demonstrates using Strands Agents to interact with the Telegram API")
     print("You can send messages, set up webhooks, and get updates from your Telegram bot.")
-    print("\nOptions:")
-    print("  'send message <text>' - Send a message to your Telegram chat")
-    print("  'set webhook <url>' - Set up a webhook URL for updates")
-    print("  'get updates' - Get recent updates from your bot")
-    print("  'exit' - Exit the program")
     print("\nExample commands:")
-    print("  'send message Hello from my bot!'")
+    print("  'send message Hello from the Strands Agent!'")
     print("  'set webhook https://myserver.com/webhook'")
     print("  'remove the webhook URL'")
+    print("  'get updates' - Get recent updates from your bot")
+    print("  'exit' - Exit the program")
 
     # Check if credentials are set before running
     if not TELEGRAM_API_KEY or not TELEGRAM_CHAT_ID:
@@ -153,7 +150,7 @@ def main():
     while True:
         try:
             user_input = input("\n> ")
-            if user_input.lower() == "exit":
+            if user_input.lower() in [ "exit", "quit" ]:
                 print("\nGoodbye! 👋")
                 break
 
