@@ -76,9 +76,22 @@ def main():
             # callback_handler = None
         )
 
-        for prompt in prompts:
-            print(f'**Prompt**: {prompt}')
-            response = aws_docs_agent(prompt)
+        # Interactive loop
+        print('----------------------------')
+        print('AWS Documentation Agent Demo')
+        print('----------------------------')
+        print('\nExample prompts to try:')
+        print('\n'.join(['- ' + p for p in prompts]))
+        print("\nType 'exit' to quit.\n")
+
+        while True:
+            user_input = input("Question: ")
+
+            if user_input.lower() in ["exit", "quit"]:
+                break
+
+            print("\nThinking...\n")
+            response = aws_docs_agent(user_input)
             print('\n' + '-' * 80 + '\n')
 
 if __name__ == '__main__':
