@@ -61,10 +61,12 @@ Use the available tools to:
 Provide clear, accurate location information and coordinates in your responses."""
 
 prompts = [
-    "Give me the latitude and longitude for the IOI Building, Singapore 018916",
-    "Provide the address for latitude: 1.27996 and longitude: 103.85121.",
-    "What is the address for Singapore 018916"
+    "What is the address for the AWS Seattle office?",
+    "Give me the latitude and longitude for 1200 12th Ave S, Seattle, WA 98144-2700, United States",
+    "Provide the address for latitude: 47.5928 and longitude: -122.31599",
+    "What's the geocode for the US zip code 98144-2700",
 ]
+
 
 def main():
     with stdio_mcp_client:
@@ -76,9 +78,22 @@ def main():
             # callback_handler = None
         )
 
-        for prompt in prompts:
-            print(f'**Prompt**: {prompt}')
-            response = aws_location_agent(prompt)
+        # Interactive loop
+        print('-----------------------')
+        print('AWS Location Agent Demo')
+        print('-----------------------')
+        print('\nExample prompts to try:')
+        print('\n'.join(['- ' + p for p in prompts]))
+        print("\nType 'exit' to quit.\n")
+
+        while True:
+            user_input = input("Question: ")
+
+            if user_input.lower() in ["exit", "quit"]:
+                break
+
+            print("\nThinking...\n")
+            response = aws_location_agent(user_input)
             print('\n' + '-' * 80 + '\n')
 
 if __name__ == '__main__':
