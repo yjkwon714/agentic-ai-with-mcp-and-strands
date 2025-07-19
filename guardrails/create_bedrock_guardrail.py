@@ -141,6 +141,8 @@ def create_guardrail(guardrail_name):
 def main():
     response = create_guardrail('basic-bedrock-guardrail')
     print(json.dumps(response, indent=2, default=str))
+    guardrail_id = response['guardrailId']
+    print(f'Your Guardrail ID is: {guardrail_id}')
 
 
 if __name__ == '__main__':
