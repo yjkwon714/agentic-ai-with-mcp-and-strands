@@ -61,10 +61,11 @@ Use the available tools to:
 Provide clear, accurate location information and coordinates in your responses."""
 
 prompts = [
-    "What is the address for the AWS Seattle office?",
-    "Give me the latitude and longitude for 1200 12th Ave S, Seattle, WA 98144-2700, United States",
-    "Provide the address for latitude: 47.5928 and longitude: -122.31599",
-    "What's the geocode for the US zip code 98144-2700",
+    "Give me the latitude and longitude for 440 Terry Ave N, Seattle, WA 98109-5210, United States",
+    "Please provide the details of Seattle Airport",
+    "Provide the address for latitude: 47.62292 and longitude: -122.33676",
+    "What's nearby to zip code 98109-5210?",
+    "Give me the driving directions from zip code 98109-5210 to the Seattle Airport"
 ]
 
 
