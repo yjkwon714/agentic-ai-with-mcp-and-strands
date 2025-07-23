@@ -64,6 +64,7 @@ Strands Agents' http_request tool provides:
 """
 
 from strands import Agent
+from strands.models import BedrockModel
 from strands_tools import http_request
 
 # Define a weather-focused system prompt
@@ -90,6 +91,7 @@ Always explain the weather conditions clearly and provide context for the foreca
 weather_agent = Agent(
     system_prompt=WEATHER_SYSTEM_PROMPT,
     tools=[http_request],  # Explicitly enable http_request tool
+    # model=BedrockModel(model_id="us.amazon.nova-lite-v1:0", temperature=0.1)
 )
 
 # Example usage
@@ -109,17 +111,13 @@ if __name__ == "__main__":
         try:
             user_input = input("\n> ")
 
-            if user_input.lower() == "exit":
+            if user_input.lower() in [ "exit", "quit" ]:
                 print("\nGoodbye! 👋")
                 break
 
             # Call the weather agent
             response = weather_agent(user_input)
             
-            # If using in conversational context, the response is already displayed
-            # This is just for demonstration purposes
-            print(str(response))
-                        
         except KeyboardInterrupt:
             print("\n\nExecution interrupted. Exiting...")
             break
