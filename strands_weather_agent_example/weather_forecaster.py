@@ -61,6 +61,19 @@ Strands Agents' http_request tool provides:
    - "What's the weather like in Chicago?"
    - "Will it rain tomorrow in Miami?"
    - "Get the forecast for San Francisco"
+
+
+1. AI 모델의 역할:
+- 사용자 질문 이해 ("Seattle 날씨")
+- 도시명을 좌표로 변환 (학습된 지식 활용)
+- 어떤 API를 호출해야 할지 결정
+- API 응답 데이터를 해석하고 포맷팅
+
+2. http_request 도구의 역할:
+- 실제 HTTP 요청 수행 (GET, POST 등)
+- 웹사이트/API 서버와 통신
+- JSON 응답 파싱
+- 네트워크 에러 처리
 """
 
 from strands import Agent
